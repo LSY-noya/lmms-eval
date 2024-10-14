@@ -49,6 +49,7 @@ from lmms_eval.utils import (
 @positional_deprecated
 def simple_evaluate(
     model,
+    lm,
     model_args: Optional[Union[str, dict]] = None,
     tasks: Optional[List[Union[str, dict, object]]] = None,
     num_fewshot: Optional[int] = None,

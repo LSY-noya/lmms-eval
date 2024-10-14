@@ -22,6 +22,7 @@ from accelerate.utils import InitProcessGroupKwargs
 from loguru import logger as eval_logger
 
 from lmms_eval import evaluator, utils
+from lmms_eval.models import get_model
 from lmms_eval.api.registry import ALL_TASKS
 from lmms_eval.evaluator import request_caching_arg_to_dict
 from lmms_eval.loggers import EvaluationTracker, WandbLogger
@@ -467,8 +468,22 @@ def cli_evaluate_single(args: Union[argparse.Namespace, None] = None) -> None:
     request_caching_args = request_caching_arg_to_dict(cache_requests=args.cache_requests)
     datetime_str = utils.get_datetime_str(timezone=args.timezone)
 
+    if args.model_args is None:
+        args.model_args = ""
+    
+    # here we load MLLMs outside of the evaluator
+    ModelClass = get_model(args.model)
+    lm = ModelClass.create_from_arg_string(
+        args.model_args,
+        {
+            "batch_size": args.batch_size,
+            "device": args.device,
+        },
+    )
+
     results = evaluator.simple_evaluate(
         model=args.model,
+        lm=lm,
         model_args=args.model_args,
         tasks=task_names,
         num_fewshot=args.num_fewshot,
