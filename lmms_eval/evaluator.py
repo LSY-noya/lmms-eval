@@ -163,18 +163,6 @@ def simple_evaluate(
         if gen_kwargs == "":
             gen_kwargs = None
 
-    if model_args is None:
-        model_args = ""
-
-    ModelClass = get_model(model)
-    lm = ModelClass.create_from_arg_string(
-        model_args,
-        {
-            "batch_size": batch_size,
-            "device": device,
-        },
-    )
-
     if task_manager is None:
         task_manager = TaskManager(verbosity, model_name=model)
 
